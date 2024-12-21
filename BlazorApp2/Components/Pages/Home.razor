@@ -1,0 +1,57 @@
+﻿@page "/"
+@inject NavigationManager NavigationManager
+
+<h1>Виртуальный тур</h1>
+
+<div class="container">
+    <div class="row">
+        <!-- Пример секции с туром -->
+        @foreach (var tour in Tours)
+        {
+            <div class="col-md-4 tour-card">
+                <img src="@tour.ImageUrl" alt="@tour.Title" class="tour-image" style="max-width: 300px; max-height: 250px; width: auto; height: auto; border-radius: 8px;" />
+                <h3>@tour.Title</h3>
+                <p>@tour.Description</p>
+                <a href="@GetTourUrl(tour.Id)" target="_blank">
+                    <button class="btn btn-primary">Посмотреть</button>
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+
+    // Модель данных для тура
+    private class Tour
+    {
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public string Duration { get; set; }
+        public string ImageUrl { get; set; }
+    }
+
+    // Список туров
+    private List<Tour> Tours = new List<Tour>
+    {
+        new Tour { Id = 1, Title = "Тур по замкам", Description = "Посещение старинных замков", Duration = "7 дней", ImageUrl = "images/tour1.jpg" },
+        new Tour { Id = 2, Title = "Горный маршрут", Description = "Прогулка по горам", Duration = "5 дней", ImageUrl = "images/tour2.jpg" },
+        new Tour { Id = 3, Title = "Городские приключения", Description = "Исследование городских улиц", Duration = "2 дней", ImageUrl = "images/tour3.jpg" },
+        new Tour { Id = 4, Title = "Морское путешествие", Description = "Прогулка на яхте", Duration = "6 часов", ImageUrl = "images/tour4.jpg" },
+        new Tour { Id = 5, Title = "Лесной поход", Description = "Экскурсия в лесу - без связи", Duration = "4 дня", ImageUrl = "images/tour5.jpg" },
+        new Tour { Id = 6, Title = "Исторический тур", Description = "Знакомство с историей региона", Duration = "10 дней", ImageUrl = "images/tour6.jpg" },
+        new Tour { Id = 7, Title = "Ночной город", Description = "Пейзажи ночного города", Duration = "12 часов", ImageUrl = "images/tour7.jpg" },
+        new Tour { Id = 8, Title = "Культурное наследие", Description = "Посещение музеев и памятников", Duration = "8 часов", ImageUrl = "images/tour8.jpg" },
+        new Tour { Id = 9, Title = "Сафари", Description = "Поездка на сафари", Duration = "14 дней", ImageUrl = "images/tour9.jpg" }
+    };
+
+    // Переход на страницу тура
+    private string GetTourUrl(int tourId)
+    {
+        var tours = Tours.FirstOrDefault(c => c.Id == tourId);
+        return $"/tour{tourId}?title={Uri.EscapeDataString(tours.Title)}&description={Uri.EscapeDataString(tours.Description)}";
+    }
+
+}
+

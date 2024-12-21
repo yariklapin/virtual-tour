@@ -1,0 +1,45 @@
+﻿@page "/tour2"
+
+<h1>Детали тура</h1>
+
+@if (SelectedTour == null)
+{
+    <p>Тур не найден.</p>
+}
+else
+{
+    <div>
+        <h2>@SelectedTour.Title</h2>
+        <img src="@SelectedTour.ImageUrl" alt="@SelectedTour.Title" style="max-width: 100%; border-radius: 8px;" />
+        <p>@SelectedTour.Description</p>
+        <p><strong>Продолжительность:</strong> @SelectedTour.Duration</p>
+    </div>
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    private Tour SelectedTour;
+
+    private List<Tour> Tours = new List<Tour>
+    {
+        new Tour { Id = 1, Title = "Тур по замкам", Description = "Посещение старинных замков", Duration = "7 дней", ImageUrl = "images/tour1.jpg" },
+        new Tour { Id = 2, Title = "Горный маршрут", Description = "Прогулка по горам", Duration = "5 дней", ImageUrl = "images/tour2.jpg" },
+        new Tour { Id = 3, Title = "Городские приключения", Description = "Исследование городских улиц", Duration = "2 дней", ImageUrl = "images/tour3.jpg" }
+        // Добавьте остальные туры
+    };
+
+    protected override void OnInitialized()
+    {
+        SelectedTour = Tours.FirstOrDefault(t => t.Id == Id);
+    }
+
+    private class Tour
+    {
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public string Duration { get; set; }
+        public string ImageUrl { get; set; }
+    }
+}

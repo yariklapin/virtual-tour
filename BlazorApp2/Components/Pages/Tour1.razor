@@ -1,0 +1,128 @@
+﻿@page "/tour1"
+@inject IJSRuntime JSRuntime
+
+<h1>Тур по замкам</h1>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <p>
+                Добро пожаловать в наш увлекательный тур по старинным замкам! Этот маршрут проведёт вас через живописные
+                пейзажи, старинные здания с богатой историей и архитектурой. Вас ждут экскурсии с профессиональными гидами
+                и незабываемые впечатления.
+            </p>
+        </div>
+        <div class="col-md-4">
+            <img src="images/tour1.jpg" alt="Тур по замкам" style="max-width: 100%; border-radius: 8px;" />
+        </div>
+    </div>
+
+    <h2>Выберите дату для бронирования</h2>
+    <div class="calendar" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; max-width: 400px;">
+        @for (int day = 1; day <= DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month); day++)
+        {
+            var currentDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, day);
+            var isAvailable = FreeDays.Contains(currentDate);
+
+            <button @onclick="() => SelectDate(currentDate)"
+                    style="padding: 10px; text-align: center; border: 1px solid #ccc; border-radius: 4px; background-color: @(isAvailable ? "#28a745" : "#f8f9fa"); color: @(isAvailable ? "white" : "black");"
+                    disabled="@(!isAvailable)">
+                @day
+            </button>
+        }
+    </div>
+
+    @if (ShowBookingModal)
+    {
+        <div class="modal" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; border-radius: 8px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); z-index: 1050;">
+            <h3>Забронировать?</h3>
+            <p>Вы выбрали дату: @SelectedDate?.ToShortDateString()</p>
+            <div class="d-flex justify-content-end">
+                <button class="btn btn-success me-2" @onclick="ConfirmBooking">Да</button>
+                <button class="btn btn-secondary" @onclick="CloseBookingModal">Нет</button>
+            </div>
+        </div>
+        <div class="modal-backdrop" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1040;"></div>
+    }
+
+    <h2>Оставить отзыв</h2>
+    <textarea @bind="UserReview" placeholder="Ваш отзыв..." rows="4" cols="50" class="form-control" style="margin-bottom: 10px;"></textarea>
+    <button class="btn btn-success" @onclick="SubmitReview">Отправить отзыв</button>
+
+    <div>
+        @if (Reviews.Any())
+        {
+            <h3>Отзывы</h3>
+            <ul class="list-group">
+                @foreach (var review in Reviews)
+                {
+                    <li class="list-group-item">@review</li>
+                }
+            </ul>
+        }
+    </div>
+</div>
+
+@code {
+    private List<DateTime> FreeDays = new List<DateTime>
+    {
+        new DateTime(DateTime.Now.Year, DateTime.Now.Month, 5),
+        new DateTime(DateTime.Now.Year, DateTime.Now.Month, 10),
+        new DateTime(DateTime.Now.Year, DateTime.Now.Month, 15),
+        new DateTime(DateTime.Now.Year, DateTime.Now.Month, 20),
+        new DateTime(DateTime.Now.Year, DateTime.Now.Month, 25)
+    };
+
+    private string UserReview;
+    private List<string> Reviews = new List<string>();
+    private bool ShowBookingModal = false;
+    private DateTime? SelectedDate;
+
+    // protected override void OnInitialized()
+    // {
+    //     LoadReviews();
+    // }
+
+    private void SubmitReview()
+    {
+        if (!string.IsNullOrWhiteSpace(UserReview))
+        {
+            Reviews.Add(UserReview);
+            SaveReviews();
+            UserReview = string.Empty;
+        }
+    }
+
+    private void SelectDate(DateTime selectedDate)
+    {
+        SelectedDate = selectedDate;
+        ShowBookingModal = true;
+    }
+
+    private void CloseBookingModal()
+    {
+        ShowBookingModal = false;
+    }
+
+    private void ConfirmBooking()
+    {
+        Console.WriteLine($"Бронирование подтверждено на дату: {SelectedDate?.ToShortDateString()}");
+        ShowBookingModal = false;
+        // Добавьте дополнительную логику для обработки бронирования
+    }
+
+    private void SaveReviews()
+    {
+        var reviewsJson = System.Text.Json.JsonSerializer.Serialize(Reviews);
+        // Microsoft.JSInterop.JSRuntime.Current.InvokeVoidAsync("localStorage.setItem", "reviews", reviewsJson);
+    }
+
+    // private void LoadReviews()
+    // {
+    //     // var reviewsJson = Microsoft.JSInterop.JSRuntime.Current.InvokeAsync<string>("localStorage.getItem", "reviews").Result;
+    //     if (!string.IsNullOrEmpty(reviewsJson))
+    //     {
+    //         Reviews = System.Text.Json.JsonSerializer.Deserialize<List<string>>(reviewsJson);
+    //     }
+    // }
+}
